@@ -1,0 +1,42 @@
+Prerequisite:
+
+You need GPG installed (comes along with GIT installation in the \bin folder) and you need to create a keyring, used for signing artifacts.
+If you have an existing key, simply import it:
+
+gpg --allow-secret-key-import --import <keyring>.gpg
+
+That, or you can install one of the binaries to import the key, from here: https://www.gnupg.org/download/index.html
+
+To release:
+
+ 1. update release notes and github readme page (don't commit)
+ 2. remove SNAPSHOT version
+ 3. mvn -DperformRelease=true clean deploy
+            (set password in settings.xml or use local pgp key password, for which the public key must have been sent to a public key server,
+            eg: gpg --keyserver hkp://keyserver.ubuntu.com --send-keys 05AC6403)
+		    server needed in settings.xml (see below)
+ 4. Go to https://oss.sonatype.org and release the artifact so it is submitted to Maven Central
+ 5. add new SNAPSHOT version and commit everything
+
+maven's settings.xml:
+
+    <server>
+      <id>ossrh</id>
+      <username>sonatype user</username>
+      <password>sonatype password</password>
+    </server>
+
+To have a global gpg password so that it will use that automatically:
+
+        <profiles>
+            <profile>
+                <id>gpg</id>
+                <properties>
+                    <gpg.executable>gpg</gpg.executable>
+                    <gpg.passphrase>letmein</gpg.passphrase>
+                </properties>
+            </profile>
+        </profiles>
+        <activeProfiles>
+            <activeProfile>gpg</activeProfile>
+        </activeProfiles>
