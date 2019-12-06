@@ -1,5 +1,6 @@
 package org.bbottema.javasocksproxyserver;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,17 +9,21 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import static java.util.Objects.requireNonNull;
 import static org.bbottema.javasocksproxyserver.Utils.getSocketInfo;
 
 public class Socks4Impl {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Socks4Impl.class);
+
 	final ProxyHandler m_Parent;
-	final byte[] DST_Port;
+	final byte[] DST_Port = new byte[2];
+	byte[] DST_Addr = new byte[4];
 	byte SOCKS_Version = 0;
 	byte socksCommand;
-	byte[] DST_Addr;
 
 	private InetAddress m_ExtLocalIP = null;
 	InetAddress m_ServerIP = null;
@@ -28,9 +33,6 @@ public class Socks4Impl {
 
 	Socks4Impl(ProxyHandler Parent) {
 		m_Parent = Parent;
-
-		DST_Addr = new byte[4];
-		DST_Port = new byte[2];
 	}
 
 	public byte getSuccessCode() {
@@ -41,8 +43,8 @@ public class Socks4Impl {
 		return 91;
 	}
 
+	@NotNull
 	public String commName(byte code) {
-
 		switch (code) {
 			case 0x01:
 				return "CONNECT";
@@ -53,11 +55,10 @@ public class Socks4Impl {
 			default:
 				return "Unknown Command";
 		}
-
 	}
 
+	@NotNull
 	public String replyName(byte code) {
-
 		switch (code) {
 			case 0:
 				return "SUCCESS";
@@ -79,7 +80,6 @@ public class Socks4Impl {
 				return "Address Type not Supported";
 			case 9:
 				return "to 0xFF UnAssigned";
-
 			case 90:
 				return "Request GRANTED";
 			case 91:
@@ -88,7 +88,6 @@ public class Socks4Impl {
 				return "Request REJECTED - SOCKS server can't connect to Identd on the client";
 			case 93:
 				return "Request REJECTED - Client and Identd report diff user-ID";
-
 			default:
 				return "Unknown Command";
 		}
@@ -102,7 +101,7 @@ public class Socks4Impl {
 		m_ClientIP = m_Parent.m_ClientSocket.getInetAddress();
 		m_nClientPort = m_Parent.m_ClientSocket.getPort();
 
-		return !((m_ServerIP != null) && (m_nServerPort >= 0));
+		return m_ServerIP == null || m_nServerPort < 0;
 	}
 
 	protected byte getByte() {
@@ -168,7 +167,6 @@ public class Socks4Impl {
 	}
 
 	public void connect() throws Exception {
-
 		LOGGER.debug("Connecting...");
 		//	Connect to the Remote Host
 		try {
@@ -184,12 +182,10 @@ public class Socks4Impl {
 	}
 
 	public void bindReply(byte ReplyCode, InetAddress IA, int PT) {
-		byte[] IP = {0, 0, 0, 0};
+		LOGGER.debug("Reply to Client : \"{}\"", replyName(ReplyCode));
 
-		LOGGER.debug("Reply to Client : \"" + replyName(ReplyCode) + "\"");
-
-		byte[] REPLY = new byte[8];
-		if (IA != null) IP = IA.getAddress();
+		final byte[] REPLY = new byte[8];
+		final byte[] IP = IA.getAddress();
 
 		REPLY[0] = 0;
 		REPLY[1] = ReplyCode;
@@ -207,6 +203,7 @@ public class Socks4Impl {
 		}
 	}
 
+	@NotNull
 	public InetAddress resolveExternalLocalIP() {
 		InetAddress IP = null;
 
@@ -224,19 +221,25 @@ public class Socks4Impl {
 
 		final String[] hosts = {"www.wikipedia.org", "www.google.com", "www.microsoft.com", "www.amazon.com", "www.zombo.com", "www.ebay.com"};
 
-		for (int i = 0; i < hosts.length; i++) {
-			try {
-				Socket sct = new Socket(InetAddress.getByName(hosts[i]), 80);
+		final List<Exception> bindExceptions = new ArrayList<>();
+		for (String host : hosts) {
+			try (Socket sct = new Socket(InetAddress.getByName(host), 80)) {
 				IP = sct.getLocalAddress();
-				sct.close();
 				break;
-			} catch (Exception e) {  // IP == null
-				LOGGER.debug("Error in BIND() - BIND reip Failed at " + i);
+			} catch (Exception e) {
+				bindExceptions.add(e);
+			}
+		}
+
+		if (IP == null) {
+			LOGGER.error("Error in BIND() - BIND reip Failed on all common hosts to determine external IP's");
+			for (Exception bindException : bindExceptions) {
+				LOGGER.debug(bindException.getMessage(), bindException);
 			}
 		}
 
 		m_ExtLocalIP = IP;
-		return IP;
+		return requireNonNull(IP);
 	}
 
 	public void bind() throws IOException {

@@ -49,13 +49,15 @@ public class SocksServer {
 			SocksServer.this.port = listenSocket.getLocalPort();
 			LOGGER.debug("SOCKS server listening at port: " + listenSocket.getLocalPort());
 
-			while (!stopping) {
-				synchronized (this) {
-					if (!stopping) {
-						handleNextClient(listenSocket);
+			while (true) {
+				synchronized (SocksServer.this) {
+					if (stopping) {
+						break;
 					}
 				}
+				handleNextClient(listenSocket);
 			}
+
 			try {
 				listenSocket.close();
 			} catch (IOException e) {

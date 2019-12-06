@@ -1,5 +1,7 @@
 package org.bbottema.javasocksproxyserver;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +16,7 @@ public final class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
+	@Nullable
 	public static InetAddress calcInetAddress(byte[] addr) {
 		InetAddress IA;
 		StringBuilder sIA = new StringBuilder();
@@ -46,18 +49,21 @@ public final class Utils {
 		return ((byte2int(Hi) << 8) | byte2int(Lo));
 	}
 
+	@NotNull
 	public static String iP2Str(InetAddress IP) {
 		return IP == null
 				? "NA/NA"
 				: format("%s/%s", IP.getHostName(), IP.getHostAddress());
 	}
 
+	@NotNull
 	public static String getSocketInfo(Socket sock) {
 		return sock == null
 				? "<NA/NA:0>"
 				: format("<%s:%d>", Utils.iP2Str(sock.getInetAddress()), sock.getPort());
 	}
 
+	@NotNull
 	public static String getSocketInfo(DatagramPacket DGP) {
 		return DGP == null
 				? "<NA/NA:0>"

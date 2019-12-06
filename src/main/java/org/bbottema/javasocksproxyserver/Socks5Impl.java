@@ -1,8 +1,10 @@
 package org.bbottema.javasocksproxyserver;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
@@ -47,6 +49,7 @@ public class Socks5Impl extends Socks4Impl {
 		return 04;
 	}
 
+	@Nullable
 	public InetAddress calcInetAddress(byte AType, byte[] addr) {
 		InetAddress IA;
 
@@ -77,7 +80,6 @@ public class Socks5Impl extends Socks4Impl {
 		return IA;
 	}
 
-
 	public boolean isInvalidAddress() {
 		m_ServerIP = calcInetAddress(ADDRESS_TYPE, DST_Addr);
 		m_nServerPort = Utils.calcPort(DST_Port[0], DST_Port[1]);
@@ -87,7 +89,6 @@ public class Socks5Impl extends Socks4Impl {
 
 		return !((m_ServerIP != null) && (m_nServerPort >= 0));
 	}
-
 
 	public void authenticate(byte SOCKS_Ver) throws Exception {
 		super.authenticate(SOCKS_Ver); // Sets SOCKS Version...
@@ -131,17 +132,13 @@ public class Socks5Impl extends Socks4Impl {
 		return ((Methods.indexOf("-0-") != -1) || (Methods.indexOf("-00-") != -1));
 	}
 
-
-	public void getClientCommand()
-			throws Exception {
-		int Addr_Len;
-
+	public void getClientCommand() throws Exception {
 		SOCKS_Version = getByte();
 		socksCommand = getByte();
 		/*byte RSV =*/ getByte(); // Reserved. Must be'00'
 		ADDRESS_TYPE = getByte();
 
-		Addr_Len = ADDR_Size[ADDRESS_TYPE];
+		int Addr_Len = ADDR_Size[ADDRESS_TYPE];
 		DST_Addr[0] = getByte();
 		if (ADDRESS_TYPE == 0x03) {
 			Addr_Len = DST_Addr[0] + 1;
@@ -227,9 +224,7 @@ public class Socks5Impl extends Socks4Impl {
 		}
 	}
 
-
 	public void udpReply(byte replyCode, InetAddress IA, int pt) {
-
 		LOGGER.debug("Reply to Client \"" + replyName(replyCode) + "\"");
 
 		if (m_Parent.m_ClientSocket == null) {
@@ -290,6 +285,7 @@ public class Socks5Impl extends Socks4Impl {
 		DGPack = new DatagramPacket(m_Parent.m_Buffer, SocksConstants.DEFAULT_BUF_SIZE);
 	}
 
+	@NotNull
 	private byte[] addDgpHead(byte[] buffer) {
 		byte[] IABuf = DGPack.getAddress().getAddress();
 		int DGport = DGPack.getPort();
@@ -311,6 +307,7 @@ public class Socks5Impl extends Socks4Impl {
 		return UB;
 	}
 
+	@Nullable
 	private byte[] clearDgpHead(byte[] buffer) {
 		final int IAlen;
 		//int	bl	= Buffer.length;
