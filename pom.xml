@@ -12,7 +12,7 @@
 	<artifactId>java-socks-proxy-server</artifactId>
 	<packaging>jar</packaging>
 	<name>java-socks-proxy-server</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<description>java-socks-proxy-server is a SOCKS 4/5 server for Java</description>
 	<url>https://github.com/bbottema/java-socks-proxy-server</url>
 	<inceptionYear>2019</inceptionYear>
