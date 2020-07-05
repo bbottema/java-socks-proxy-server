@@ -12,10 +12,25 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
-v1.0.0 (4-December-2019)
+v1.0.2 (5-July-2020)
+
+- Bumped log4j-core from 2.6.1 to 2.13.2 
+
+
+v1.0.1 (6-December-2019)
+
+- Removed Jacoco instrumentation from production code
+
+
+v1.0.0 (6-December-2019)
+
+Initial release
+
+
+4-December-2019
 
 Initial upload

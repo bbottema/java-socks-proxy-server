@@ -4,6 +4,21 @@ https://github.com/bbottema/java-socks-proxy-server
 RELEASE NOTES java-socks-proxy-server
 
 
-v1.0.0 (4-December-2019)
+v1.0.2 (5-July-2020)
+
+- Bumped log4j-core from 2.6.1 to 2.13.2
+
+
+v1.0.1 (6-December-2019)
+
+- Removed Jacoco instrumentation from production code
+
+
+v1.0.0 (6-December-2019)
+
+Initial release
+
+
+4-December-2019
 
 Initial upload
