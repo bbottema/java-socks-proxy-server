@@ -388,7 +388,7 @@ public class Socks5Impl extends Socks4Impl {
 
 	/**
 	 * Processing Client's datagram
-	 * This Method must be called only from <ProcessUDP()>
+	 * This Method must be called only from {@link #processUdp()}
 	 */
 	private void processUdpClient() {
 		m_nClientPort = DGPack.getPort();
