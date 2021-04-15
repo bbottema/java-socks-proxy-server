@@ -13,8 +13,6 @@ public class SocksServer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
 	
-	protected int port;
-	private ServerSocketFactory serverSocketFactory;
 	protected boolean stopping = false;
 	
 	public synchronized void start(int listenPort) {
@@ -23,21 +21,23 @@ public class SocksServer {
 	
 	public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
 		this.stopping = false;
-		this.port = listenPort;
-		this.serverSocketFactory = serverSocketFactory;
-		new Thread(new ServerProcess()).start();
+		new Thread(new ServerProcess(listenPort, serverSocketFactory)).start();
 	}
 
 	public synchronized void stop() {
 		stopping = true;
 	}
 	
-	public int getPort() {
-		return port;
-	}
-
 	private class ServerProcess implements Runnable {
-
+		
+		protected final int port;
+		private final ServerSocketFactory serverSocketFactory;
+		
+		public ServerProcess(int port, ServerSocketFactory serverSocketFactory) {
+			this.port = port;
+			this.serverSocketFactory = serverSocketFactory;
+		}
+		
 		@Override
 		public void run() {
 			LOGGER.debug("SOCKS server started...");
@@ -53,7 +53,7 @@ public class SocksServer {
 		protected void handleClients(int port) throws IOException {
 			final ServerSocket listenSocket = serverSocketFactory.createServerSocket(port);
 			listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
-			SocksServer.this.port = listenSocket.getLocalPort();
+			
 			LOGGER.debug("SOCKS server listening at port: " + listenSocket.getLocalPort());
 
 			while (true) {
