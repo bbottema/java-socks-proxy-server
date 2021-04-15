@@ -3,6 +3,7 @@ package org.bbottema.javasocksproxyserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
@@ -11,22 +12,28 @@ import java.net.Socket;
 public class SocksServer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
-
+	
 	protected int port;
+	private ServerSocketFactory serverSocketFactory;
 	protected boolean stopping = false;
-
-	public int getPort() {
-		return port;
-	}
-
+	
 	public synchronized void start(int listenPort) {
+		start(listenPort, ServerSocketFactory.getDefault());
+	}
+	
+	public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
 		this.stopping = false;
 		this.port = listenPort;
+		this.serverSocketFactory = serverSocketFactory;
 		new Thread(new ServerProcess()).start();
 	}
 
 	public synchronized void stop() {
 		stopping = true;
+	}
+	
+	public int getPort() {
+		return port;
 	}
 
 	private class ServerProcess implements Runnable {
@@ -44,7 +51,7 @@ public class SocksServer {
 		}
 
 		protected void handleClients(int port) throws IOException {
-			final ServerSocket listenSocket = new ServerSocket(port);
+			final ServerSocket listenSocket = serverSocketFactory.createServerSocket(port);
 			listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
 			SocksServer.this.port = listenSocket.getLocalPort();
 			LOGGER.debug("SOCKS server listening at port: " + listenSocket.getLocalPort());
