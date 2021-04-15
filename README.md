@@ -16,6 +16,34 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 </dependency>
 ```
 
+## Usage:
+
+```
+SocksServer socksServer = new SocksServer();
+
+socksServer.start(100); // start serving clients on port 100
+socksServer.start(200); // start serving clients on port 200
+socksServer.start(300, myCustomServerSocketFactory); // eg. SSL on port 300
+
+socksServer.stop(); // stops server on all ports
+```
+
+For use in junit tests:
+
+```
+	@ClassRule
+	public static final SockServerRule sockServerRule = new SockServerRule(PROXY_SERVER_PORT);
+	
+	// or
+	
+	@ClassRule
+	public static final SockServerRule sockServerRule = new SockServerRule(PROXY_SERVER_PORT, myServerSocketFactory);
+```
+
+And that's it!
+
+## Change history
+
 v1.1.0 (15-April-2021)
 
 - [#4](https://github.com/bbottema/java-socks-proxy-server/issues/4) added support for custom server socket factory (so you are free to configure SSL)
