@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.14</version>
+		<version>1.0.23</version>
 	</parent>
 
 	<artifactId>java-socks-proxy-server</artifactId>
@@ -16,6 +16,11 @@
 	<description>java-socks-proxy-server is a SOCKS 4/5 server for Java</description>
 	<url>https://github.com/bbottema/java-socks-proxy-server</url>
 	<inceptionYear>2019</inceptionYear>
+
+	<properties>
+		<license.owner.name>Benny Bottema</license.owner.name>
+		<license.owner.email>benny@bennybottema.com</license.owner.email>
+	</properties>
 
 	<scm>
 		<connection>scm:git:git://github.com/bbottema/java-socks-proxy-server.git</connection>
@@ -49,21 +54,18 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.6.1</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.6.1</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.13.2</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
