@@ -4,6 +4,11 @@ https://github.com/bbottema/java-socks-proxy-server
 RELEASE NOTES java-socks-proxy-server
 
 
+v2.0.0 (26-December-2021)
+
+- Switched to Java 8 and included fix for recent log4j security issue
+
+
 v1.1.0 (15-April-2021)
 
 - #4: added support for custom server socket factory (so you are free to configure SSL)

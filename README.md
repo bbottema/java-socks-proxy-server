@@ -12,7 +12,7 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
@@ -43,6 +43,11 @@ For use in junit tests:
 And that's it!
 
 ## Change history
+
+v2.0.0 (26-December-2021)
+
+- Switched to Java 8 and included fix for recent log4j security issue
+
 
 v1.1.0 (15-April-2021)
 
