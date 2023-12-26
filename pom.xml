@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.23</version>
+		<version>1.0.29</version>
 	</parent>
 
 	<artifactId>java-socks-proxy-server</artifactId>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.2</version>
+			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
 

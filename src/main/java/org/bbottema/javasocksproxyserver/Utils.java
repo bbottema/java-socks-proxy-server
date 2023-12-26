@@ -5,10 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
 
 import static java.lang.String.format;
 
@@ -68,5 +66,23 @@ public final class Utils {
 		return DGP == null
 				? "<NA/NA:0>"
 				: format("<%s:%d>", Utils.iP2Str(DGP.getAddress()), DGP.getPort());
+	}
+
+	public static int getFreePort() {
+		try (ServerSocket serverSocket = new ServerSocket(0)) {
+			return serverSocket.getLocalPort();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static boolean isLocalPortAvailableToConnect(int port) {
+		try (Socket ignored = new Socket("localhost", port)) {
+			return true;
+		} catch (ConnectException e) {
+			return false;
+		} catch (IOException e) {
+			throw new IllegalStateException("Error while trying to check open port", e);
+		}
 	}
 }
