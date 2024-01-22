@@ -1,0 +1,219 @@
+Delivered-To: benny@bennybottema.com
+Received: by 2002:a05:6a11:561c:b0:3b4:6ada:3a72 with SMTP id rr28csp2003120pxb;
+        Tue, 10 Jan 2023 15:26:12 -0800 (PST)
+X-Received: by 2002:a05:6512:3a8f:b0:4b5:8a01:570e with SMTP id q15-20020a0565123a8f00b004b58a01570emr21738509lfu.45.1673393172745;
+        Tue, 10 Jan 2023 15:26:12 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1673393172; cv=none;
+        d=google.com; s=arc-20160816;
+        b=xiEwU/okR/TTRZbOBhTZlY6zBl3lBflJmqwdyggGrzuAmc21ai3SjPNL34RNBuU4pn
+         THpy0jfHpc5EqmEI4YlSr+sU+iewZ97QIlQhC3akFZ/uBWebcTAgkzuEvfkydgeEoyIG
+         WG5H0y54EKQd1ztypQt2bW2cH6rac2f1J9Rx2yp9IXNB14BVm+8xGi067gDumR03ScVx
+         vlQ7RX3zjUFi2r8/oKtur59gPDLwAFMvE05/LjMlEZciy/BFBQNfH70538C6vVen6BRH
+         /kfW1xmRS6hMhwKvcZhvppTKRzFyK3BqgeaJLYWrqWwx96k6LsWFIY9izTmwtN2l4Pdt
+         kPFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=s5lagK6D3fziFmXnXofxqpyTfGkmLDW+s55EaH9NutM=;
+        b=DdLLTW5qDvibptpQR5imCBMPe/QGMufghVbqjNNBJ/wWvFrw5nZjdKBbbDy6zUmKrn
+         th09Zu89N+esM5PN9f1ulrUcxmwQtOSazxsJALZt6nIuiLocjA4h4O5d5Nxj6WH7uABO
+         QoDINGTed9ayZcD/HJvNy5npTJCu+efNdm55jDHgknuOm2sPe3LiCV4TMK6D0vjuK3nT
+         k6I+Byn4i9LRwYc/Fd3sbCbzKcmu0+Hys99AZoGeOkPUMw4Jc7hOhcreySZ/EGt+WxH3
+         dTt13TrJVPEizkxaBPrREK5ykLsRl93M4bZcEpEkSUFtmauHu+6RnTg6upU2v4AWRmpG
+         WbBg==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@scicrop-com.20210112.gappssmtp.com header.s=20210112 header.b=33rIzhFH;
+       spf=pass (google.com: domain of jose.damico@scicrop.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=jose.damico@scicrop.com
+Return-Path: <jose.damico@scicrop.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id w17-20020a056512099100b004964af76ecesor2700799lft.31.2023.01.10.15.26.12
+        for <benny@bennybottema.com>
+        (Google Transport Security);
+        Tue, 10 Jan 2023 15:26:12 -0800 (PST)
+Received-SPF: pass (google.com: domain of jose.damico@scicrop.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@scicrop-com.20210112.gappssmtp.com header.s=20210112 header.b=33rIzhFH;
+       spf=pass (google.com: domain of jose.damico@scicrop.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=jose.damico@scicrop.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=scicrop-com.20210112.gappssmtp.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=s5lagK6D3fziFmXnXofxqpyTfGkmLDW+s55EaH9NutM=;
+        b=33rIzhFHbrQovM6ouF2XacpSTe9Ff/8eqTLv4Z8W/5fbWFfVjZbmTnSB/PufG5yZtn
+         AVmi8Foz/9Djea2Pgw8gmS9AfSgFIVj1gSCJ1Me+hDAj75s6uzD/9gDHceQrffjGMudq
+         nvekFMz4kxgIHf049ijqpcdnLugjXdSBCPqYDNfMHV3QUwGBPHfn1zuUXxO36xYRHtKL
+         Wvrt7MW1hYWkeYBvhzp+mG5BRd6CcdmkwpKjxaGy8kpNCTGfVzuIuYhejHh6+zM34T1J
+         rUmQjv+TQQ3bSnhXVRpOejp2KwOwk71xmT/NnMNGk6B1G1OEvK9h8a5TzEWPETANIesY
+         IoUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=s5lagK6D3fziFmXnXofxqpyTfGkmLDW+s55EaH9NutM=;
+        b=gZ+PwjLV0mVJjVH/Ro8xOxfqZphPzJTLFqC7CxY0EF5f/B5Tsq9TDicgflg4A+ElpA
+         bSmY/zp6qcvnbkFKJWVL/eNuAm2AwPe6AX1+qFFcpf6uUnf/BLk81z982vCEMqDHAd1Z
+         +psLC/7SaYHXiYCa1/VLEBfWiaBTNubwkEu4W7+ROBoST7o1X+kYG2kuZgVOFkiTVakZ
+         oIE/J2plVtzJPEMOi7Bdqu/ueAeSr+RYAMQtCgHqihjJDyLxClQEaA95dExvS1pztC7B
+         Ck2mo+egKArBF3xpkVPWb16D22N7Arugtz0tpumsFMJbRaF6yVEuLYIB06qOaqB1gPxO
+         xLcA==
+X-Gm-Message-State: AFqh2kqT+ZR7/C7GUVGNKIbKrx/jqUrfhoMy5Kkdw6Cw+tNUau0xwqED
+	MxIUZEX6IVxF22W+5W4VndeMY2rJqKlpdnQn49M7PkqkV1Wq7zGTfk0OtQE3qmJxaL5MBlhpooQ
+	88zJgNrASlZxM5YIZCb5eeFfus5oBRbXws/nW
+X-Google-Smtp-Source: AMrXdXus6jUHDNhwGdA694Obf+dklLoaqs6gShQ9k5ba7+ft9PV+LxC35B/vTCKopRsF3MgmDTcLSuxs6y3n5TGk5+o=
+X-Received: by 2002:ac2:505c:0:b0:4c8:38ba:74ec with SMTP id
+ a28-20020ac2505c000000b004c838ba74ecmr2789614lfm.172.1673393171539; Tue, 10
+ Jan 2023 15:26:11 -0800 (PST)
+MIME-Version: 1.0
+From: =?UTF-8?B?Sm9zw6kgRGFtaWNv?= <jose.damico@scicrop.com>
+Date: Tue, 10 Jan 2023 20:25:59 -0300
+Message-ID: <CAEZH4qb+-rH-Eis3Q_HfLtew+TP3XX7jA6G5LmZowufZtn=2kw@mail.gmail.com>
+Subject: Source Code - Authorization of Use
+To: benny@bennybottema.com
+Content-Type: multipart/alternative; boundary="0000000000008f4da505f1f13556"
+
+--0000000000008f4da505f1f13556
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+I, Jos=C3=A9 Ricardo de Oliveira Damico, Brazilian, CEO e Founder of SciCro=
+p,
+author of the source code available at
+https://github.com/damico/java-socks-proxy-server and owner of the
+aforementioned repository, certify that Benny Bottema is authorized to use,
+copy, reproduce, update and/or edit, the source code written by me and
+available in the git repository which can be found at this web address:
+https://github.com /damico/java-socks-proxy-server. The authorization given
+by me to use, copy, reproduce, update and/or edit said source code applies
+to any other source code used by Benny Bottema either in the repository
+https://github.com/bbottema/java-socks- proxy-server or any other
+repository he wants.
+
+This authorization does not include any type of responsibility over Jos=C3=
+=A9
+Ricardo de Oliveira Damico for code maintenance, security fixes, or any
+error, bug or losses caused by mentioned source code.
+
+
+Sao Paulo (Brazil), January 10, 2023.
+
+Jos=C3=A9 Damico
+CEO & Co-Founder
+
++55 (11) 3136-0319
++55 (11) 992-767-542
+  <https://play.google.com/store/apps/details?id=3Dcom.scicrop.ceci>
+<https://br.linkedin.com/company/scicrop>
+<https://www.facebook.com/Scicrop>
+<https://www.youtube.com/channel/UCQI8hJ7_-rftN2gdLS6eZMQ>
+
+--=20
+"Aten=C3=A7=C3=A3o: Esta mensagem foi enviada para uso exclusivo do(s)=20
+destinat=C3=A1rios(s) acima identificado(s), podendo conter informa=C3=A7=
+=C3=B5es e/ou=20
+documentos confidenciais/privilegiados e seu sigilo =C3=A9 protegido por le=
+i.=20
+Caso voc=C3=AA tenha recebido por engano, por favor, informe o remetente e=
+=20
+apague-a de seu sistema.
+Notificamos que =C3=A9 proibido por lei a sua reten=C3=A7=C3=A3o,=20
+dissemina=C3=A7=C3=A3o, distribui=C3=A7=C3=A3o, c=C3=B3pia ou uso sem expre=
+ssa autoriza=C3=A7=C3=A3o do=20
+remetente. Opini=C3=B5es pessoais do remetente n=C3=A3o refletem, necessari=
+amente, o=20
+ponto de vista da SciCrop, o qual =C3=A9 divulgado somente por pessoas=20
+autorizadas."
+
+
+"Warning: This message was sent for exclusive use of the=20
+addressees above identified, possibly containing information and or=20
+privileged/confidential documents whose content is protected by law.
+In=20
+case you have mistakenly received it, please notify the sender and delete=
+=20
+it from your system.
+Be noticed that the law forbids the retention,=20
+dissemination, distribution, copy or use without express authorization from=
+=20
+the sender. Personal opinions of the sender do not necessarily reflect=20
+SciCrop's point of view, which is only divulged by authorized personnel."
+
+--0000000000008f4da505f1f13556
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><br></div><div>I, Jos=C3=A9 Ricardo de Oliveira Damic=
+o, Brazilian, CEO e Founder of SciCrop, author of the source code available=
+ at <a href=3D"https://github.com/damico/java-socks-proxy-server">https://g=
+ithub.com/damico/java-socks-proxy-server</a> and owner of the aforementione=
+d repository, certify that Benny Bottema is authorized to use, copy, reprod=
+uce, update and/or edit, the source code written by me and available in the=
+ git repository which can be found at this web address: <a href=3D"https://=
+github.com">https://github.com</a> /damico/java-socks-proxy-server. The aut=
+horization given by me to use, copy, reproduce, update and/or edit said sou=
+rce code applies to any other source code used by Benny Bottema either in t=
+he repository <a href=3D"https://github.com/bbottema/java-socks-">https://g=
+ithub.com/bbottema/java-socks-</a> proxy-server or any other repository he =
+wants.=C2=A0</div><div><br></div><div>This authorization does not include a=
+ny type of responsibility=C2=A0over Jos=C3=A9 Ricardo de Oliveira Damico fo=
+r code maintenance, security fixes, or any error, bug or losses caused by m=
+entioned source code.</div><div><br></div><div><br></div><div>Sao Paulo (Br=
+azil), January 10, 2023.=C2=A0</div><br clear=3D"all"><div><div dir=3D"ltr"=
+ class=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div dir=3D"l=
+tr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><table width=3D"450" style=
+=3D"border-spacing:0px;border-collapse:collapse;color:rgb(51,51,51);font-fa=
+mily:&#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif;font-size:14px;lin=
+e-height:26.6667px"><tbody><tr valign=3D"top" height=3D"1"><td width=3D"250=
+" style=3D"padding:0px"><font face=3D"Arial, Verdana" color=3D"#172b3e" siz=
+e=3D"2"><span style=3D"font-weight:700"><span>Jos=C3=A9 Damico</span>=C2=A0=
+</span></font><br><font face=3D"Arial, Verdana" color=3D"#172b3e" size=3D"2=
+"><span>CEO &amp; Co-Founder</span>=C2=A0</font><br><br><font face=3D"Arial=
+, Verdana" color=3D"#172b3e" size=3D"2">+55 (11) 3136-0319=C2=A0<br></font>=
+<font face=3D"Arial, Verdana" color=3D"#172b3e" size=3D"2"><span>+55 (11) 9=
+92-767-542</span>=C2=A0</font><br></td><td width=3D"200" style=3D"padding:0=
+px"><table width=3D"180" style=3D"border-spacing:0px;border-collapse:collap=
+se;background-color:transparent"><tbody><tr><td style=3D"padding:0px"><img =
+src=3D"https://scicrop.com/assinatura/logo_ass.png" align=3D"right" style=
+=3D"border:0px;vertical-align:middle"></td></tr></tbody></table></td></tr><=
+tr><td colspan=3D"2" style=3D"padding:0px"><img src=3D"https://scicrop.com/=
+assinatura/img_01.jpg" style=3D"border:0px;vertical-align:middle">=C2=A0<a =
+href=3D"https://play.google.com/store/apps/details?id=3Dcom.scicrop.ceci" s=
+tyle=3D"color:rgb(51,122,183);text-decoration:none;background-color:transpa=
+rent" target=3D"_blank"><img src=3D"https://scicrop.com/assinatura/icon_gpl=
+ay.png" style=3D"border:0px;vertical-align:middle"></a>=C2=A0=C2=A0=C2=A0<a=
+ href=3D"https://br.linkedin.com/company/scicrop" style=3D"color:rgb(51,122=
+,183);text-decoration:none;background-color:transparent" target=3D"_blank">=
+<img src=3D"https://scicrop.com/assinatura/icon_linkedin.png" style=3D"bord=
+er:0px;vertical-align:middle"></a>=C2=A0=C2=A0=C2=A0<a href=3D"https://www.=
+facebook.com/Scicrop" style=3D"color:rgb(51,122,183);text-decoration:none;b=
+ackground-color:transparent" target=3D"_blank"><img src=3D"https://scicrop.=
+com/assinatura/icon_face.png" style=3D"border:0px;vertical-align:middle"></=
+a>=C2=A0=C2=A0=C2=A0<a href=3D"https://www.youtube.com/channel/UCQI8hJ7_-rf=
+tN2gdLS6eZMQ" style=3D"color:rgb(51,122,183);text-decoration:none;backgroun=
+d-color:transparent" target=3D"_blank"><img src=3D"https://scicrop.com/assi=
+natura/icon_youtube.png" style=3D"border:0px;vertical-align:middle"></a></t=
+d></tr></tbody></table></div></div></div></div></div></div></div></div>
+
+<br>
+<div><font face=3D"Arial, Helvetica, sans-serif" size=3D"1">&quot;Aten=C3=
+=A7=C3=A3o: Esta mensagem foi enviada para uso exclusivo do(s) destinat=C3=
+=A1rios(s) acima identificado(s), podendo conter informa=C3=A7=C3=B5es e/ou=
+ documentos confidenciais/privilegiados e seu sigilo =C3=A9 protegido por l=
+ei. Caso voc=C3=AA tenha recebido por engano, por favor, informe o remetent=
+e e apague-a de seu sistema.</font></div><div><font face=3D"Arial, Helvetic=
+a, sans-serif" size=3D"1">Notificamos que =C3=A9 proibido por lei a sua ret=
+en=C3=A7=C3=A3o, dissemina=C3=A7=C3=A3o, distribui=C3=A7=C3=A3o, c=C3=B3pia=
+ ou uso sem expressa autoriza=C3=A7=C3=A3o do remetente. Opini=C3=B5es pess=
+oais do remetente n=C3=A3o refletem, necessariamente, o ponto de vista da S=
+ciCrop, o qual =C3=A9 divulgado somente por pessoas autorizadas.&quot;</fon=
+t></div><div><font face=3D"Arial, Helvetica, sans-serif" size=3D"1"><br></f=
+ont></div><div><font face=3D"Arial, Helvetica, sans-serif" size=3D"1">&quot=
+;Warning: This message was sent for exclusive use of the addressees above i=
+dentified, possibly containing information and or privileged/confidential d=
+ocuments whose content is protected by law.</font></div><div><font face=3D"=
+Arial, Helvetica, sans-serif" size=3D"1">In case you have mistakenly receiv=
+ed it, please notify the sender and delete it from your system.</font></div=
+><div><font face=3D"Arial, Helvetica, sans-serif" size=3D"1">Be noticed tha=
+t the law forbids the retention, dissemination, distribution, copy or use w=
+ithout express authorization from the sender. Personal opinions of the send=
+er do not necessarily reflect SciCrop&#39;s point of view, which is only di=
+vulged by authorized personnel.&quot;</font></div>
+--0000000000008f4da505f1f13556--
