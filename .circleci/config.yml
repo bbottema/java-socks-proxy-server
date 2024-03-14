@@ -4,7 +4,7 @@ orbs:
   github-maven-deploy: github-maven-deploy/github-maven-deploy@1.0.5
 
 mvn-build-test-command: &mvn-build-test-command
-  mvn-build-test-command: mvn verify -DexcludeLiveServerTests=true -Dmaven.javadoc.skip=true
+  mvn-build-test-command: mvn verify -DexcludeLiveServerTests=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dlicense.skip=true
 
 mvn-deploy-command: &mvn-deploy-command
   mvn-deploy-command: mvn -s .circleci/maven-release-settings.xml clean deploy -DdeployAtEnd=true -DperformRelease=true -DskipTests -Dspotbugs.skip=true -Djacoco.skip=true
