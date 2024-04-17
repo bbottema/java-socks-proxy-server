@@ -1,73 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.bbottema</groupId>
-		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.30</version>
-	</parent>
+    <parent>
+        <groupId>com.github.bbottema</groupId>
+        <artifactId>standard-project-parent</artifactId>
+        <version>1.0.37</version>
+    </parent>
 
-	<artifactId>java-socks-proxy-server</artifactId>
-	<packaging>jar</packaging>
-	<name>java-socks-proxy-server</name>
-	<version>3.0.0</version>
-	<description>java-socks-proxy-server is a SOCKS 4/5 server for Java</description>
-	<url>https://github.com/bbottema/java-socks-proxy-server</url>
-	<inceptionYear>2019</inceptionYear>
+    <artifactId>java-socks-proxy-server</artifactId>
+    <packaging>jar</packaging>
+    <name>java-socks-proxy-server</name>
+    <version>3.0.0</version>
+    <description>java-socks-proxy-server is a SOCKS 4/5 server for Java</description>
+    <url>https://github.com/bbottema/java-socks-proxy-server</url>
+    <inceptionYear>2019</inceptionYear>
 
-	<properties>
-		<license.owner.name>Benny Bottema</license.owner.name>
-		<license.owner.email>benny@bennybottema.com</license.owner.email>
-	</properties>
+    <properties>
+        <license.owner.name>Benny Bottema</license.owner.name>
+        <license.owner.email>benny@bennybottema.com</license.owner.email>
+    </properties>
 
-	<scm>
-		<connection>scm:git:git://github.com/bbottema/java-socks-proxy-server.git</connection>
-		<developerConnection>scm:git:git@github.com:bbottema/java-socks-proxy-server.git</developerConnection>
-		<url>https://github.com/bbottema/java-socks-proxy-server</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git://github.com/bbottema/java-socks-proxy-server.git</connection>
+        <developerConnection>scm:git:git@github.com:bbottema/java-socks-proxy-server.git</developerConnection>
+        <url>https://github.com/bbottema/java-socks-proxy-server</url>
+    </scm>
 
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/bbottema/java-socks-proxy-server/issues</url>
-	</issueManagement>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/bbottema/java-socks-proxy-server/issues</url>
+    </issueManagement>
 
-	<dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.30</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- logging -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
