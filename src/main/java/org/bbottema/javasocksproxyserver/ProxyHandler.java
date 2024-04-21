@@ -195,6 +195,9 @@ public class ProxyHandler implements Runnable {
 				case SocksConstants.SC_UDP:
 					comm.udp();
 					break;
+				default:
+					LOGGER.warn("Unsupported Command, skipping... : " + comm.socksCommand);
+					break;
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
