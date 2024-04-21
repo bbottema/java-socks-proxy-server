@@ -4,12 +4,7 @@ orbs:
   github-maven-deploy: github-maven-deploy/github-maven-deploy@1.2.0
 
 mvn-build-test-command: &mvn-build-test-command
-  mvn-build-test-command: mvn verify -DexcludeLiveServerTests=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dlicense.skip=true
-
-mvn-collect-artifacts-command: &mvn-collect-artifacts-command
-  mvn-collect-artifacts-command: |
-    mkdir -p artifacts/cli
-    cp modules/cli-module/target/*standalone* artifacts/cli/
+  mvn-build-test-command: mvn verify -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dlicense.skip=true
 
 mvn-deploy-command: &mvn-deploy-command
   mvn-deploy-command:  |
@@ -22,7 +17,6 @@ workflows:
     jobs:
       - github-maven-deploy/build-and-test:
           <<: *mvn-build-test-command
-          <<: *mvn-collect-artifacts-command
           filters:
             branches:
               only: master
