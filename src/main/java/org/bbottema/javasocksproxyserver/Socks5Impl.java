@@ -1,10 +1,5 @@
 package org.bbottema.javasocksproxyserver;
 
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
@@ -24,7 +19,7 @@ public class Socks5Impl extends Socks4Impl {
 			-1, //'03' First Byte is Len
 			16  //'04' IP v6 - 16bytes
 	};
-	private static final Logger LOGGER = LoggerFactory.getLogger(Socks5Impl.class);
+	private static final Logger LOGGER = new Logger("Socks5Impl");
 	private static final byte[] SRE_REFUSE = {(byte) 0x05, (byte) 0xFF};
 	private static final byte[] SRE_ACCEPT = {(byte) 0x05, (byte) 0x00};
 	private static final int MAX_ADDR_LEN = 255;
@@ -49,7 +44,6 @@ public class Socks5Impl extends Socks4Impl {
 		return 04;
 	}
 
-	@Nullable
 	public InetAddress calcInetAddress(byte AType, byte[] addr) {
 		InetAddress IA;
 
@@ -285,7 +279,6 @@ public class Socks5Impl extends Socks4Impl {
 		DGPack = new DatagramPacket(m_Parent.m_Buffer, SocksConstants.DEFAULT_BUF_SIZE);
 	}
 
-	@NotNull
 	private byte[] addDgpHead(byte[] buffer) {
 		byte[] IABuf = DGPack.getAddress().getAddress();
 		int DGport = DGPack.getPort();
@@ -307,7 +300,6 @@ public class Socks5Impl extends Socks4Impl {
 		return UB;
 	}
 
-	@Nullable
 	private byte[] clearDgpHead(byte[] buffer) {
 		final int IAlen;
 		//int	bl	= Buffer.length;

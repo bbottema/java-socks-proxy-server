@@ -1,9 +1,5 @@
 package org.bbottema.javasocksproxyserver;
 
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -17,7 +13,7 @@ import static org.bbottema.javasocksproxyserver.Utils.getSocketInfo;
 
 public class Socks4Impl {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Socks4Impl.class);
+	private static final Logger LOGGER = new Logger("Socks4Impl");
 
 	final ProxyHandler m_Parent;
 	final byte[] DST_Port = new byte[2];
@@ -43,7 +39,6 @@ public class Socks4Impl {
 		return 91;
 	}
 
-	@NotNull
 	public String commName(byte code) {
 		switch (code) {
 			case 0x01:
@@ -57,7 +52,6 @@ public class Socks4Impl {
 		}
 	}
 
-	@NotNull
 	public String replyName(byte code) {
 		switch (code) {
 			case 0:
@@ -182,7 +176,7 @@ public class Socks4Impl {
 	}
 
 	public void bindReply(byte ReplyCode, InetAddress IA, int PT) {
-		LOGGER.debug("Reply to Client : \"{}\"", replyName(ReplyCode));
+		LOGGER.debug("Reply to Client : '" + replyName(ReplyCode) + "'");
 
 		final byte[] REPLY = new byte[8];
 		final byte[] IP = IA.getAddress();
@@ -203,7 +197,6 @@ public class Socks4Impl {
 		}
 	}
 
-	@NotNull
 	public InetAddress resolveExternalLocalIP() {
 		InetAddress IP = null;
 
@@ -234,7 +227,8 @@ public class Socks4Impl {
 		if (IP == null) {
 			LOGGER.error("Error in BIND() - BIND reip Failed on all common hosts to determine external IP's");
 			for (Exception bindException : bindExceptions) {
-				LOGGER.debug(bindException.getMessage(), bindException);
+				bindException.printStackTrace();
+				LOGGER.debug(bindException.getMessage());
 			}
 		}
 

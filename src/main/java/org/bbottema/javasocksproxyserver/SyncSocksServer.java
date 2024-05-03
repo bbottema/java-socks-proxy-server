@@ -1,15 +1,14 @@
 package org.bbottema.javasocksproxyserver;
 
-import lombok.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SyncSocksServer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SyncSocksServer.class);
+    private static final Logger LOGGER = new Logger("SyncSocksServer");
     private static final long DEFAULT_SERVER_SOCKET_OPEN_TIMEOUT_MILLIS = 5000;
     private static final long DEFAULT_SERVER_SOCKET_OPEN_RETRY_INTERVAL_MILLIS = 200;
     private static final long DEFAULT_CLOSE_CONNECTION_TIMEOUT_MILLIS = 5000;
@@ -55,7 +54,7 @@ public class SyncSocksServer {
     public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
         stopping = false;
         if (servers.containsKey(listenPort)) {
-            LOGGER.error("SOCKS server already started on port {}", listenPort);
+            LOGGER.error("SOCKS server already started on port '" + listenPort + "'");
             return;
         }
         ServerProcess serverProcess = new ServerProcess(listenPort, serverSocketFactory);
@@ -111,7 +110,8 @@ public class SyncSocksServer {
                         removeDisconnectedClients();
                     }
                 } catch (Exception e) {
-                    LOGGER.debug("Can't handle clients on port {} ", port, e);
+                    e.printStackTrace();
+                    LOGGER.debug("Can't handle clients on port " + port + ", message: " + e.getMessage());
                 }
                 if (!stopping) {
                     Thread.sleep(serverSocketOpenRetryIntervalMillis);
@@ -124,7 +124,7 @@ public class SyncSocksServer {
                 return serverSocketOpenLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                LOGGER.error("Timeout while waiting for server socket to opened {}", port);
+                LOGGER.error("Timeout while waiting for server socket to opened " + port);
                 throw new RuntimeException(e);
             }
         }
@@ -136,18 +136,19 @@ public class SyncSocksServer {
                 LOGGER.debug("Connection from : " + Utils.getSocketInfo(clientSocket));
                 ProxyHandler handler = new ProxyHandler(clientSocket);
                 Thread thread = new Thread(handler);
-                clients.add(ProxyClient.of(clientSocket, handler, thread));
+                clients.add(new ProxyClient(clientSocket, handler, thread));
                 thread.start();
             } catch (InterruptedIOException e) {
                 //	This exception is thrown when accept timeout is expired
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
         }
 
         private void waitAllClientsToJoinOrTimeout() {
             for (ProxyClient client : clients) {
-                LOGGER.debug("Waiting client connection {} to close", Utils.getSocketInfo(client.socket));
+                LOGGER.debug("Waiting client connection '" + Utils.getSocketInfo(client.socket) + "' to close");
                 client.handler.close();
                 try {
                     client.thread.join(closeConnectionTimeoutMillis);
@@ -155,7 +156,7 @@ public class SyncSocksServer {
                     throw new RuntimeException(e);
                 }
                 if (client.thread.isAlive()) {
-                    LOGGER.error("Can't stop client connection {} to close", Utils.getSocketInfo(client.socket));
+                    LOGGER.error("Can't stop client connection '" + Utils.getSocketInfo(client.socket) + "' to close");
                 }
             }
             clients.clear();
@@ -168,25 +169,30 @@ public class SyncSocksServer {
 
     private void waitAllServersToJoin() {
         servers.forEach((port, thread) -> {
-            LOGGER.debug("Waiting server on port {} to close", port);
+            LOGGER.debug("Waiting server on port " + port + " to close");
             try {
                 thread.join(closeConnectionTimeoutMillis);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             if (thread.isAlive()) {
-                LOGGER.error("Can't stop server on port {} to close", port);
+                LOGGER.error("Can't stop server on port " + port + " to close");
             }
         });
         servers.clear();
     }
 
 
-    @Value(staticConstructor = "of")
     static class ProxyClient {
         Socket socket;
         ProxyHandler handler;
         Thread thread;
+
+        public ProxyClient(Socket socket, ProxyHandler handler, Thread thread) {
+            this.socket = socket;
+            this.handler = handler;
+            this.thread = thread;
+        }
     }
 
 }

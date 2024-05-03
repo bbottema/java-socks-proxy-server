@@ -1,8 +1,5 @@
 package org.bbottema.javasocksproxyserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -15,7 +12,7 @@ import static org.bbottema.javasocksproxyserver.Utils.getSocketInfo;
 
 public class ProxyHandler implements Runnable {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyHandler.class);
+	private static final Logger LOGGER = new Logger("ProxyHandler");
 
 	private InputStream m_ClientInput = null;
 	private OutputStream m_ClientOutput = null;
@@ -156,7 +153,8 @@ public class ProxyHandler implements Runnable {
 			return true;
 		} catch (IOException e) {
 			LOGGER.error("Proxy - can't get I/O streams!");
-			LOGGER.error(e.getMessage(), e);
+			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 			return false;
 		}
 	}
@@ -200,7 +198,8 @@ public class ProxyHandler implements Runnable {
 					break;
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 

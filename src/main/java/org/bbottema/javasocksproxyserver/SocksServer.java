@@ -1,8 +1,5 @@
 package org.bbottema.javasocksproxyserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -11,7 +8,7 @@ import java.net.Socket;
 
 public class SocksServer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
+	private static final Logger LOGGER = new Logger("SocksServer");
 	
 	protected boolean stopping = false;
 	
@@ -81,7 +78,8 @@ public class SocksServer {
 			} catch (InterruptedIOException e) {
 				//	This exception is thrown when accept timeout is expired
 			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
+				e.printStackTrace();
+				LOGGER.error(e.getMessage());
 			}
 		}
 	}
