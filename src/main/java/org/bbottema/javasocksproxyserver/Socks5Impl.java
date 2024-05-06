@@ -153,17 +153,6 @@ public class Socks5Impl extends Socks4Impl {
 		m_Parent.sendToClient(authResponse);
 	}
 
-	public boolean checkAuthentication() {
-		final byte Methods_Num = getByte();
-		final StringBuilder Methods = new StringBuilder();
-
-		for (int i = 0; i < Methods_Num; i++) {
-			Methods.append(",-").append(getByte()).append('-');
-		}
-
-		return ((Methods.indexOf("-0-") != -1) || (Methods.indexOf("-00-") != -1));
-	}
-
 	public void getClientCommand() throws Exception {
 		SOCKS_Version = getByte();
 		socksCommand = getByte();
