@@ -98,10 +98,11 @@ public class Socks5Impl extends Socks4Impl {
 		if (SOCKS_Version == SocksConstants.SOCKS5_Version) {
 			byte[] authModes = getAuthenticationModes();
 			acceptedAuthType = m_Parent.authenticator.accept(authModes);
+			System.out.println("Accepted auth type " + acceptedAuthType);
 			sendAuthResponse(acceptedAuthType);
 		} else {
 			sendAuthResponse(AuthConstants.NONE_ACCEPTED);
-      		LOGGER.debug("SOCKS 5 - Refuse Authentication: Incorrect SOCKS version: {}", SOCKS_Version);
+			LOGGER.debug("SOCKS 5 - Refuse Authentication: Incorrect SOCKS version: {}", SOCKS_Version);
 			throw new Exception("Not Supported SOCKS Version -'" +
 					SOCKS_Version + "'");
 		}
@@ -121,9 +122,8 @@ public class Socks5Impl extends Socks4Impl {
     	byte[] password = readByteString();
 
     	boolean credentialsAccepted = m_Parent.authenticator.validate(username, password);
-
+		System.out.println("Credentials accepted: " + credentialsAccepted);
     	m_Parent.sendToClient(credentialsAccepted ? AuthConstants.AUTH_USER_PASS_SUCCESS : AuthConstants.AUTH_USER_PASS_FAILED);
-    	m_Parent.sendToClient(new byte[] {0x01, 0x00});
    }
 
 	public byte[] readByteString() {

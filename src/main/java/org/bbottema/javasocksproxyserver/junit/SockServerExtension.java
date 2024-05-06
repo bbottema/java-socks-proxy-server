@@ -24,14 +24,14 @@ public class SockServerExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     public SockServerExtension(@NotNull Integer port, @NotNull ServerSocketFactory serverSocketFactory) {
-        this.socksServer = new SocksServer();
+        this.socksServer = new SocksServer(port, serverSocketFactory);
         this.port = port;
         this.serverSocketFactory = serverSocketFactory;
     }
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        this.socksServer.start(port, serverSocketFactory);
+        this.socksServer.start();
     }
 
     @Override

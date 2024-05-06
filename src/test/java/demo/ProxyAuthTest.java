@@ -6,6 +6,6 @@ import java.io.IOException;
 
 public class ProxyAuthTest {
   public static void main(String[] args) throws IOException {
-    new SocksServer().start(10003);
+    new SocksServer(10003).start();
   }
 }

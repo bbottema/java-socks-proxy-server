@@ -4,15 +4,15 @@ import org.bbottema.javasocksproxyserver.AuthConstants;
 
 public abstract class UsernamePasswordAuthenticator extends Authenticator {
 
-    private final boolean acceptNoAuth;
+    private final boolean acceptNoAuthMode;
 
-    public UsernamePasswordAuthenticator(boolean acceptNoAuth) {
-        this.acceptNoAuth = acceptNoAuth;
+    public UsernamePasswordAuthenticator(boolean acceptNoAuthMode) {
+        this.acceptNoAuthMode = acceptNoAuthMode;
     }
 
     @Override
     public byte accept(byte[] authTypes) {
-        if (acceptNoAuth) {
+        if (acceptNoAuthMode) {
             for (byte type : authTypes) {
                 if (type == AuthConstants.TYPE_NO_AUTH) {
                     return type;
