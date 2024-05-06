@@ -25,9 +25,11 @@ public class Socks5Impl extends Socks4Impl {
 			16  //'04' IP v6 - 16bytes
 	};
 	private static final Logger LOGGER = LoggerFactory.getLogger(Socks5Impl.class);
-	private static final byte[] SRE_REFUSE = {(byte) 0x05, (byte) 0xFF};
-	private static final byte[] SRE_ACCEPT = {(byte) 0x05, (byte) 0x00};
+
 	private static final int MAX_ADDR_LEN = 255;
+
+	private byte acceptedAuthType = 0x00;
+
 	private byte ADDRESS_TYPE;
 	private DatagramSocket DGSocket = null;
 	private DatagramPacket DGPack = null;
@@ -94,32 +96,62 @@ public class Socks5Impl extends Socks4Impl {
 		super.authenticate(SOCKS_Ver); // Sets SOCKS Version...
 
 		if (SOCKS_Version == SocksConstants.SOCKS5_Version) {
-			if (!checkAuthentication()) {// It reads whole Cli Request
-				refuseAuthentication("SOCKS 5 - Not Supported Authentication!");
-				throw new Exception("SOCKS 5 - Not Supported Authentication.");
-			}
-			acceptAuthentication();
-		}// if( SOCKS_Version...
-		else {
-			refuseAuthentication("Incorrect SOCKS version : " + SOCKS_Version);
+			byte[] authModes = getAuthenticationModes();
+			acceptedAuthType = m_Parent.authenticator.accept(authModes);
+			sendAuthResponse(acceptedAuthType);
+		} else {
+			sendAuthResponse(AuthConstants.NONE_ACCEPTED);
+      LOGGER.debug("SOCKS 5 - Refuse Authentication: Incorrect SOCKS version: {}", SOCKS_Version);
 			throw new Exception("Not Supported SOCKS Version -'" +
 					SOCKS_Version + "'");
 		}
 	}
 
-	public void refuseAuthentication(String msg) {
-		LOGGER.debug("SOCKS 5 - Refuse Authentication: '" + msg + "'");
-		m_Parent.sendToClient(SRE_REFUSE);
+	@Override
+	public void clientAuthResponse() throws Exception {
+		if (acceptedAuthType != AuthConstants.TYPE_USER_PASS_AUTH) {
+			return;
+		}
+    byte version = getByte();
+    if (version != AuthConstants.AUTH_VERSION) {
+      m_Parent.sendToClient(AuthConstants.AUTH_USER_PASS_FAILED);
+      throw new Exception("Not supported SOCKS Username Password Version - '" + version + "'");
+    }
+    byte[] username = readByteString();
+    byte[] password = readByteString();
+
+    boolean credentialsAccepted = m_Parent.authenticator.validate(username, password);
+
+    m_Parent.sendToClient(credentialsAccepted ? AuthConstants.AUTH_USER_PASS_SUCCESS : AuthConstants.AUTH_USER_PASS_FAILED);
+    m_Parent.sendToClient(new byte[] {0x01, 0x00});
+  }
+
+	public byte[] readByteString() {
+		byte length = getByte();
+		byte[] bytes = new byte[length];
+
+		for (int i = 0; i < length; i++) {
+			bytes[i] = getByte();
+		}
+		return bytes;
+	}
+
+	private byte[] getAuthenticationModes() {
+		byte numberOfAuthModesAvailable = getByte();
+		byte[] auths = new byte[numberOfAuthModesAvailable];
+		for (byte i = 0; i < numberOfAuthModesAvailable; i++) {
+			auths[i] = getByte();
+		}
+		return auths;
 	}
 
 
-	public void acceptAuthentication() {
-		LOGGER.debug("SOCKS 5 - Accepts Auth. method 'NO_AUTH'");
-		byte[] tSRE_Accept = SRE_ACCEPT;
-		tSRE_Accept[0] = SOCKS_Version;
-		m_Parent.sendToClient(tSRE_Accept);
+	private void sendAuthResponse(byte result) {
+		byte[] authResponse = new byte[2];
+		authResponse[0] = SOCKS_Version;
+		authResponse[1] = result;
+		m_Parent.sendToClient(authResponse);
 	}
-
 
 	public boolean checkAuthentication() {
 		final byte Methods_Num = getByte();
