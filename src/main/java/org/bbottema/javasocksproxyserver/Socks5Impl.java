@@ -98,7 +98,7 @@ public class Socks5Impl extends Socks4Impl {
 		if (SOCKS_Version == SocksConstants.SOCKS5_Version) {
 			byte[] authModes = getAuthenticationModes();
 			acceptedAuthType = m_Parent.authenticator.accept(authModes);
-			System.out.println("Accepted auth type " + acceptedAuthType);
+			LOGGER.debug("Socks 5 - Accepted Auth Type {}", acceptedAuthType);
 			sendAuthResponse(acceptedAuthType);
 		} else {
 			sendAuthResponse(AuthConstants.NONE_ACCEPTED);
@@ -110,21 +110,25 @@ public class Socks5Impl extends Socks4Impl {
 
 	@Override
 	public void clientAuthResponse() throws Exception {
-		if (acceptedAuthType != AuthConstants.TYPE_USER_PASS_AUTH) {
+		if (acceptedAuthType == AuthConstants.TYPE_NO_AUTH) {
 			return;
+		}
+		if (acceptedAuthType != AuthConstants.TYPE_USER_PASS_AUTH) {
+            LOGGER.debug("Unknown AUTH TYPE {}", acceptedAuthType);
+			throw new RuntimeException("Can only handle NO_AUTH, USER_PASS_AUTH, unrecognized '" + acceptedAuthType + "'");
 		}
     	byte version = getByte();
     	if (version != AuthConstants.AUTH_VERSION) {
       		m_Parent.sendToClient(AuthConstants.AUTH_USER_PASS_FAILED);
+			LOGGER.debug("Socks 5 - Unknown AUTH_VERSION {}", version);
       		throw new Exception("Not supported SOCKS Username Password Version - '" + version + "'");
     	}
     	byte[] username = readByteString();
     	byte[] password = readByteString();
 
     	boolean credentialsAccepted = m_Parent.authenticator.validate(username, password);
-		System.out.println("Credentials accepted: " + credentialsAccepted);
     	m_Parent.sendToClient(credentialsAccepted ? AuthConstants.AUTH_USER_PASS_SUCCESS : AuthConstants.AUTH_USER_PASS_FAILED);
-   }
+    }
 
 	public byte[] readByteString() {
 		byte length = getByte();
