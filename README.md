@@ -31,13 +31,13 @@ socksServer.stop(); // stops server on all ports
 For use in junit 5 tests (for Junit 4 use a version < 3.0.0):
 
 ```
-	@RegisterExtension
-	static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT);
-	
-	// or
-	
-	@RegisterExtension
-	static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT, myServerSocketFactory);
+@RegisterExtension
+static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT);
+
+// or
+
+@RegisterExtension
+static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT, myServerSocketFactory);
 ```
 
 And that's it!
