@@ -12,7 +12,7 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
@@ -66,6 +66,14 @@ static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER
 And that's it!
 
 ## Change history
+
+v3.1.0 (15-May-2024)
+
+- [#14](https://github.com/bbottema/java-socks-proxy-server/issues/14): Enhanced dynamic username/password authentication support for custom validation strategies.
+- Minor performance improvements based on SpotBugs recommendations.
+
+NOTE: the start methods have been marked deprecated. For serving clienst on multiple ports, create a new instance of the server for each port.
+
 
 v3.0.0 (22-Januray-2024)
 
