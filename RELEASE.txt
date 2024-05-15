@@ -4,12 +4,17 @@ https://github.com/bbottema/java-socks-proxy-server
 -- RELEASE NOTES java-socks-proxy-server --
 
 
-v3.1.0 (15-May-2024)
+v4.1.0 (15-May-2024)
 
 - #14: Enhanced dynamic username/password authentication support for custom validation strategies.
 - Minor performance improvements based on SpotBugs recommendations.
 
 NOTE: the start methods have been marked deprecated. For serving clienst on multiple ports, create a new instance of the server for each port.
+
+
+v4.0.0 (21-April-2024)
+
+- Maintenance release: upgraded parent POM version, switched to Junit5, updated dependencies, added SpotBugs checks.
 
 
 v3.0.0 (22-Januray-2024)
