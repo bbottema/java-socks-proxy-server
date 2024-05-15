@@ -21,6 +21,8 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 ```java
 // start serving clients on port 1234
 SocksServer server = new SocksServer(1234).start();
+...
+server.stop(); // stop serving any new proxy requests
 ```
 
 Or you can supply your own `ServerSocketFactory`:
