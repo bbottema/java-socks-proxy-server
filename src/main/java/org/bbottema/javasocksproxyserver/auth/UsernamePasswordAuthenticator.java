@@ -2,6 +2,8 @@ package org.bbottema.javasocksproxyserver.auth;
 
 import org.bbottema.javasocksproxyserver.AuthConstants;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public abstract class UsernamePasswordAuthenticator extends Authenticator {
 
     private final boolean acceptNoAuthMode;
@@ -29,7 +31,7 @@ public abstract class UsernamePasswordAuthenticator extends Authenticator {
 
     @Override
     public boolean validate(byte[] username, byte[] password) {
-        return validate(new String(username), new String(password));
+        return validate(new String(username, UTF_8), new String(password, UTF_8));
     }
 
     public abstract boolean validate(String username, String password);

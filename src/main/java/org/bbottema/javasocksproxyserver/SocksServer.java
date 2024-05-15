@@ -35,7 +35,7 @@ public class SocksServer {
 		this.factory = factory;
 	}
 
-	public SocksServer setAuthenticator(Authenticator authenticator) {
+	public synchronized SocksServer setAuthenticator(Authenticator authenticator) {
 		this.authenticator = authenticator;
 		return this;
 	}
@@ -90,8 +90,8 @@ public class SocksServer {
 		protected void handleClients(int port) throws IOException {
 			final ServerSocket listenSocket = serverSocketFactory.createServerSocket(port);
 			listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
-			
-			LOGGER.debug("SOCKS server listening at port: " + listenSocket.getLocalPort());
+
+            LOGGER.debug("SOCKS server listening at port: {}", listenSocket.getLocalPort());
 
 			while (true) {
 				synchronized (SocksServer.this) {
@@ -113,7 +113,7 @@ public class SocksServer {
 			try {
 				final Socket clientSocket = listenSocket.accept();
 				clientSocket.setSoTimeout(SocksConstants.DEFAULT_SERVER_TIMEOUT);
-				LOGGER.debug("Connection from : " + Utils.getSocketInfo(clientSocket));
+                LOGGER.debug("Connection from : {}", Utils.getSocketInfo(clientSocket));
 				new Thread(new ProxyHandler(clientSocket, authenticator)).start();
 			} catch (InterruptedIOException e) {
 				//	This exception is thrown when accept timeout is expired
