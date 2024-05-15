@@ -8,7 +8,7 @@
 
 It is a continuation of https://github.com/damico/java-socks-proxy-server.
 
-```
+```xml
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
@@ -18,15 +18,38 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 
 ## Usage:
 
+```java
+// start serving clients on port 1234
+SocksServer server = new SocksServer(1234).start();
+...
+server.stop(); // stop serving any new proxy requests
 ```
-SocksServer socksServer = new SocksServer();
 
-socksServer.start(100); // start serving clients on port 100
-socksServer.start(200); // start serving clients on port 200
-socksServer.start(300, myCustomServerSocketFactory); // eg. SSL on port 300
+Or you can supply your own `ServerSocketFactory`:
 
-socksServer.stop(); // stops server on all ports
+```java
+// e.g. SSL on port 7132
+SocksServer server = new SocksServer(1234, myCustomServerFactory).start();
 ```
+
+> By default, library uses `NO_AUTH` authentication mode
+
+### Username and Password Authentication
+
+If you want to authenticate the clients, before proxying, you can set a `UsernamePasswordAuthenticator`, library supports standard Username/Password protocol.
+
+```java
+    new SocksServer(1234)
+        .setAuthenticator(new UsernamePasswordAuthenticator(false) {
+          @Override
+          public boolean validate(String username, String password) {
+            // validate credentials here, e.g. check your local database
+            return username.equals("mysecureusername") && password.equals("mysecurepassword");
+          }
+        }).start();
+```
+
+> Supply a `true` value to constructor `UsernamePasswordAuthenticator()`, if you also want to prefer `NO_AUTH` mode over Username and password.
 
 For use in junit 5 tests (for Junit 4 use a version < 3.0.0):
 

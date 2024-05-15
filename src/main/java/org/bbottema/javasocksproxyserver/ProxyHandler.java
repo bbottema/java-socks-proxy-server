@@ -1,5 +1,7 @@
 package org.bbottema.javasocksproxyserver;
 
+import org.bbottema.javasocksproxyserver.auth.Authenticator;
+import org.bbottema.javasocksproxyserver.auth.DefaultAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +26,20 @@ public class ProxyHandler implements Runnable {
 	private Object m_lock;
 	private Socks4Impl comm = null;
 
+	final Authenticator authenticator;
+
 	Socket m_ClientSocket;
 	Socket m_ServerSocket = null;
 	byte[] m_Buffer = new byte[SocksConstants.DEFAULT_BUF_SIZE];
 
 	public ProxyHandler(Socket clientSocket) {
+		this(clientSocket, new DefaultAuthenticator());
+	}
+
+	public ProxyHandler(Socket clientSocket, Authenticator authenticator) {
 		m_lock = this;
 		m_ClientSocket = clientSocket;
+		this.authenticator = authenticator;
 		try {
 			m_ClientSocket.setSoTimeout(SocksConstants.DEFAULT_PROXY_TIMEOUT);
 		} catch (SocketException e) {
@@ -179,6 +188,7 @@ public class ProxyHandler implements Runnable {
 			LOGGER.debug("Accepted SOCKS " + SOCKS_Version + " Request.");
 
 			comm.authenticate(SOCKS_Version);
+			comm.clientAuthResponse();
 			comm.getClientCommand();
 
 			switch (comm.socksCommand) {

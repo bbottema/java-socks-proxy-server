@@ -1,6 +1,8 @@
 package org.bbottema.javasocksproxyserver;
 
 import lombok.Value;
+import org.bbottema.javasocksproxyserver.auth.Authenticator;
+import org.bbottema.javasocksproxyserver.auth.DefaultAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +55,16 @@ public class SyncSocksServer {
     }
 
     public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
+        start(listenPort, serverSocketFactory, new DefaultAuthenticator());
+    }
+
+    public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory, Authenticator authenticator) {
         stopping = false;
         if (servers.containsKey(listenPort)) {
             LOGGER.error("SOCKS server already started on port {}", listenPort);
             return;
         }
-        ServerProcess serverProcess = new ServerProcess(listenPort, serverSocketFactory);
+        ServerProcess serverProcess = new ServerProcess(listenPort, serverSocketFactory, authenticator);
         Thread thread = new Thread(serverProcess);
         servers.put(listenPort, thread);
         thread.start();
@@ -79,9 +85,12 @@ public class SyncSocksServer {
         private final List<ProxyClient> clients = new ArrayList<>();
         private final CountDownLatch serverSocketOpenLatch = new CountDownLatch(1);
 
-        public ServerProcess(int port, ServerSocketFactory serverSocketFactory) {
+        private final Authenticator authenticator;
+
+        public ServerProcess(int port, ServerSocketFactory serverSocketFactory, Authenticator authenticator) {
             this.port = port;
             this.serverSocketFactory = serverSocketFactory;
+            this.authenticator = authenticator;
         }
 
         @Override
@@ -134,7 +143,7 @@ public class SyncSocksServer {
                 final Socket clientSocket = listenSocket.accept();
                 clientSocket.setSoTimeout(SocksConstants.DEFAULT_SERVER_TIMEOUT);
                 LOGGER.debug("Connection from : " + Utils.getSocketInfo(clientSocket));
-                ProxyHandler handler = new ProxyHandler(clientSocket);
+                ProxyHandler handler = new ProxyHandler(clientSocket, authenticator);
                 Thread thread = new Thread(handler);
                 clients.add(ProxyClient.of(clientSocket, handler, thread));
                 thread.start();

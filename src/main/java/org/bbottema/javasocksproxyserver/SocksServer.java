@@ -1,5 +1,6 @@
 package org.bbottema.javasocksproxyserver;
 
+import org.bbottema.javasocksproxyserver.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,29 +14,65 @@ public class SocksServer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
 	
-	protected boolean stopping = false;
-	
-	public synchronized void start(int listenPort) {
-		start(listenPort, ServerSocketFactory.getDefault());
-	}
-	
-	public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
-		this.stopping = false;
-		new Thread(new ServerProcess(listenPort, serverSocketFactory)).start();
+	private volatile boolean stopped = false;
+	private int listenPort;
+
+	private ServerSocketFactory factory;
+	private Authenticator authenticator = null;
+
+	public SocksServer() {
+		listenPort = 1080;
+		factory = ServerSocketFactory.getDefault();
 	}
 
-	public synchronized void stop() {
-		stopping = true;
+	public SocksServer(int listenPort) {
+		this.listenPort = listenPort;
+		factory = ServerSocketFactory.getDefault();
+	}
+
+	public SocksServer(int listenPort, ServerSocketFactory factory) {
+		this.listenPort = listenPort;
+		this.factory = factory;
+	}
+
+	public SocksServer setAuthenticator(Authenticator authenticator) {
+		this.authenticator = authenticator;
+		return this;
+	}
+
+	@Deprecated
+	public synchronized void start(int port) {
+		start(port, ServerSocketFactory.getDefault());
+  }
+
+	@Deprecated
+	public synchronized void start(int port, ServerSocketFactory factory) {
+		listenPort = port;
+		this.factory = factory;
+		start();
+	}
+
+	public synchronized SocksServer start() {
+		stopped = false;
+		new Thread(new ServerProcess(listenPort, factory, authenticator)).start();
+		return this;
+	}
+
+	public synchronized SocksServer stop() {
+		stopped = true;
+		return this;
 	}
 	
 	private class ServerProcess implements Runnable {
 		
 		protected final int port;
 		private final ServerSocketFactory serverSocketFactory;
+		private final Authenticator authenticator;
 		
-		public ServerProcess(int port, ServerSocketFactory serverSocketFactory) {
+		public ServerProcess(int port, ServerSocketFactory serverSocketFactory, Authenticator authenticator) {
 			this.port = port;
 			this.serverSocketFactory = serverSocketFactory;
+			this.authenticator = authenticator;
 		}
 		
 		@Override
@@ -58,7 +95,7 @@ public class SocksServer {
 
 			while (true) {
 				synchronized (SocksServer.this) {
-					if (stopping) {
+					if (stopped) {
 						break;
 					}
 				}
@@ -77,7 +114,7 @@ public class SocksServer {
 				final Socket clientSocket = listenSocket.accept();
 				clientSocket.setSoTimeout(SocksConstants.DEFAULT_SERVER_TIMEOUT);
 				LOGGER.debug("Connection from : " + Utils.getSocketInfo(clientSocket));
-				new Thread(new ProxyHandler(clientSocket)).start();
+				new Thread(new ProxyHandler(clientSocket, authenticator)).start();
 			} catch (InterruptedIOException e) {
 				//	This exception is thrown when accept timeout is expired
 			} catch (Exception e) {

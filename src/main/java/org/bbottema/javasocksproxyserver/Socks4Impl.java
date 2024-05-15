@@ -116,6 +116,11 @@ public class Socks4Impl {
 		SOCKS_Version = SOCKS_Ver;
 	}
 
+
+	public void clientAuthResponse() throws Exception {
+		// Socks5Impl must implement this
+	}
+
 	public void getClientCommand() throws Exception {
 		// Version was get in method Authenticate()
 		socksCommand = getByte();
