@@ -15,10 +15,15 @@ public class SocksServer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
 	
 	private volatile boolean stopped = false;
-	private final int listenPort;
+	private int listenPort;
 
-	private final ServerSocketFactory factory;
+	private ServerSocketFactory factory;
 	private Authenticator authenticator = null;
+
+	public SocksServer() {
+		listenPort = 1080;
+		factory = ServerSocketFactory.getDefault();
+	}
 
 	public SocksServer(int listenPort) {
 		this.listenPort = listenPort;
@@ -33,6 +38,18 @@ public class SocksServer {
 	public SocksServer setAuthenticator(Authenticator authenticator) {
 		this.authenticator = authenticator;
 		return this;
+	}
+
+	@Deprecated
+	public synchronized void start(int port) {
+		start(port, ServerSocketFactory.getDefault());
+  }
+
+	@Deprecated
+	public synchronized void start(int port, ServerSocketFactory factory) {
+		listenPort = port;
+		this.factory = factory;
+		start();
 	}
 
 	public synchronized SocksServer start() {
