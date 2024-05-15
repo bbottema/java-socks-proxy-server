@@ -51,6 +51,18 @@ If you want to authenticate the clients, before proxying, you can set a `Usernam
 
 > Supply a `true` value to constructor `UsernamePasswordAuthenticator()`, if you also want to prefer `NO_AUTH` mode over Username and password.
 
+For use in junit 5 tests (for Junit 4 use a version < 3.0.0):
+
+```
+@RegisterExtension
+static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT);
+
+// or
+
+@RegisterExtension
+static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER_PORT, myServerSocketFactory);
+```
+
 And that's it!
 
 ## Change history
