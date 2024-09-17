@@ -70,7 +70,7 @@ And that's it!
 v4.1.0 (15-May-2024)
 
 - [#14](https://github.com/bbottema/java-socks-proxy-server/issues/14): Enhanced dynamic username/password authentication support for custom validation strategies.
-- Minor performance improvements based on SpotBugs recommendations.
+- Minor performance improvements based on SpotBugs recommendations..
 
 NOTE: the start methods have been marked deprecated. For serving clienst on multiple ports, create a new instance of the server for each port.
 
