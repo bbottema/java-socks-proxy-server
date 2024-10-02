@@ -16,17 +16,13 @@ import javax.net.ServerSocketFactory;
 public class SockServerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final SocksServer socksServer;
-    private final int port;
-    private final ServerSocketFactory serverSocketFactory;
 
     public SockServerExtension(@NotNull Integer port) {
         this(port, ServerSocketFactory.getDefault());
     }
 
     public SockServerExtension(@NotNull Integer port, @NotNull ServerSocketFactory serverSocketFactory) {
-        this.socksServer = new SocksServer(port, serverSocketFactory);
-        this.port = port;
-        this.serverSocketFactory = serverSocketFactory;
+        this.socksServer = new SocksServer(port).setFactory(serverSocketFactory);
     }
 
     @Override

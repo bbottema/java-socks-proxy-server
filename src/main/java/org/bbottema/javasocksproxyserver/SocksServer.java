@@ -1,6 +1,8 @@
 package org.bbottema.javasocksproxyserver;
 
 import org.bbottema.javasocksproxyserver.auth.Authenticator;
+import org.bbottema.javasocksproxyserver.auth.DefaultAuthenticator;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,52 +17,38 @@ public class SocksServer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
 	
 	private volatile boolean stopped = false;
-	private int listenPort;
+	private final int listenPort;
 
-	private ServerSocketFactory factory;
-	private Authenticator authenticator = null;
+	@NotNull private ServerSocketFactory factory;
+	@NotNull private Authenticator authenticator;
 
 	public SocksServer() {
-		listenPort = 1080;
-		factory = ServerSocketFactory.getDefault();
+		this(1080);
 	}
 
 	public SocksServer(int listenPort) {
 		this.listenPort = listenPort;
-		factory = ServerSocketFactory.getDefault();
+		this.factory = ServerSocketFactory.getDefault();
+		this.authenticator = new DefaultAuthenticator();
 	}
 
-	public SocksServer(int listenPort, ServerSocketFactory factory) {
-		this.listenPort = listenPort;
+	public synchronized SocksServer setFactory(@NotNull ServerSocketFactory factory) {
 		this.factory = factory;
+		return this;
 	}
 
-	public synchronized SocksServer setAuthenticator(Authenticator authenticator) {
+	public synchronized SocksServer setAuthenticator(@NotNull Authenticator authenticator) {
 		this.authenticator = authenticator;
 		return this;
 	}
 
-	@Deprecated
-	public synchronized void start(int port) {
-		start(port, ServerSocketFactory.getDefault());
-  }
-
-	@Deprecated
-	public synchronized void start(int port, ServerSocketFactory factory) {
-		listenPort = port;
-		this.factory = factory;
-		start();
-	}
-
-	public synchronized SocksServer start() {
+	public synchronized void start() {
 		stopped = false;
 		new Thread(new ServerProcess(listenPort, factory, authenticator)).start();
-		return this;
 	}
 
-	public synchronized SocksServer stop() {
+	public synchronized void stop() {
 		stopped = true;
-		return this;
 	}
 	
 	private class ServerProcess implements Runnable {
