@@ -12,7 +12,7 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
-  <version>3.0.1</version>
+  <version>4.1.2</version>
 </dependency>
 ```
 
@@ -67,10 +67,15 @@ And that's it!
 
 ## Change history
 
+v4.1.2 (02-October-2024)
+- [#15](https://github.com/bbottema/java-socks-proxy-server/issues/15): [bug+maintenance] Current version doesn't assign default authentication handler properly, address nullability and superfluous method chaining.
+
+
 v4.1.0 (15-May-2024)
+v4.1.1 (duplicate release)
 
 - [#14](https://github.com/bbottema/java-socks-proxy-server/issues/14): Enhanced dynamic username/password authentication support for custom validation strategies.
-- Minor performance improvements based on SpotBugs recommendations..
+- Minor performance improvements based on SpotBugs recommendations.
 
 NOTE: the start methods have been marked deprecated. For serving clienst on multiple ports, create a new instance of the server for each port.
 

@@ -4,7 +4,12 @@ https://github.com/bbottema/java-socks-proxy-server
 -- RELEASE NOTES java-socks-proxy-server --
 
 
+v4.1.2 (02-October-2024)
+- #15: [bug+maintenance] Current version doesn't assign default authentication handler properly, address nullability and superfluous method chaining.
+
+
 v4.1.0 (15-May-2024)
+v4.1.1 (duplicate release)
 
 - #14: Enhanced dynamic username/password authentication support for custom validation strategies.
 - Minor performance improvements based on SpotBugs recommendations.
