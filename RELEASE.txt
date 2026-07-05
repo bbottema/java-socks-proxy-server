@@ -4,6 +4,10 @@ https://github.com/bbottema/java-socks-proxy-server
 -- RELEASE NOTES java-socks-proxy-server --
 
 
+v4.2.0 (05-July-2026)
+- #16: Added dynamic port startup with a RunningSocksServer handle that exposes the actual bound port and lifecycle controls.
+
+
 v4.1.2 (02-October-2024)
 - #15: [bug+maintenance] Current version doesn't assign default authentication handler properly, address nullability and superfluous method chaining.
 

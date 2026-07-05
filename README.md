@@ -12,7 +12,7 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 <dependency>
   <groupId>com.github.bbottema</groupId>
   <artifactId>java-socks-proxy-server</artifactId>
-  <version>4.1.2</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 
@@ -87,6 +87,10 @@ static SockServerExtension sockServerRule = new SockServerExtension(PROXY_SERVER
 And that's it!
 
 ## Change history
+
+v4.2.0 (05-July-2026)
+- [#16](https://github.com/bbottema/java-socks-proxy-server/issues/16): Added dynamic port startup with a `RunningSocksServer` handle that exposes the actual bound port and lifecycle controls.
+
 
 v4.1.2 (02-October-2024)
 - [#15](https://github.com/bbottema/java-socks-proxy-server/issues/15): [bug+maintenance] Current version doesn't assign default authentication handler properly, address nullability and superfluous method chaining.
