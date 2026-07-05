@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class SocksServer {
 
@@ -18,6 +20,8 @@ public class SocksServer {
 	
 	private volatile boolean stopped = false;
 	private final int listenPort;
+	private volatile int boundPort;
+	@NotNull private volatile CountDownLatch serverSocketOpenLatch = new CountDownLatch(0);
 
 	@NotNull private ServerSocketFactory factory;
 	@NotNull private Authenticator authenticator;
@@ -28,6 +32,7 @@ public class SocksServer {
 
 	public SocksServer(int listenPort) {
 		this.listenPort = listenPort;
+		this.boundPort = listenPort;
 		this.factory = ServerSocketFactory.getDefault();
 		this.authenticator = new DefaultAuthenticator();
 	}
@@ -44,11 +49,26 @@ public class SocksServer {
 
 	public synchronized void start() {
 		stopped = false;
+		boundPort = listenPort;
+		serverSocketOpenLatch = new CountDownLatch(1);
 		new Thread(new ServerProcess(listenPort, factory, authenticator)).start();
 	}
 
 	public synchronized void stop() {
 		stopped = true;
+	}
+
+	public int getListenPort() {
+		return boundPort;
+	}
+
+	public boolean waitUntilStarted(long timeoutMillis) {
+		try {
+			return serverSocketOpenLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("Interrupted while waiting for server socket to open", e);
+		}
 	}
 	
 	private class ServerProcess implements Runnable {
@@ -78,8 +98,10 @@ public class SocksServer {
 		protected void handleClients(int port) throws IOException {
 			final ServerSocket listenSocket = serverSocketFactory.createServerSocket(port);
 			listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
+			boundPort = listenSocket.getLocalPort();
+			serverSocketOpenLatch.countDown();
 
-            LOGGER.debug("SOCKS server listening at port: {}", listenSocket.getLocalPort());
+            LOGGER.debug("SOCKS server listening at port: {}", boundPort);
 
 			while (true) {
 				synchronized (SocksServer.this) {
