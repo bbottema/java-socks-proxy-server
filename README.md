@@ -20,7 +20,8 @@ It is a continuation of https://github.com/damico/java-socks-proxy-server.
 
 ```java
 // start serving clients on port 1234
-SocksServer server = new SocksServer(1234).start();
+SocksServer server = new SocksServer(1234);
+server.start();
 ...
 server.stop(); // stop serving any new proxy requests
 ```
@@ -39,7 +40,8 @@ Or you can supply your own `ServerSocketFactory`:
 
 ```java
 // e.g. SSL on port 7132
-SocksServer server = new SocksServer(1234, myCustomServerFactory).start();
+SocksServer server = new SocksServer(1234).setFactory(myCustomServerFactory);
+server.start();
 ```
 
 > By default, library uses `NO_AUTH` authentication mode
