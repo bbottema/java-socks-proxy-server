@@ -29,11 +29,20 @@ server.stop(); // stop serving any new proxy requests
 To let the OS assign an ephemeral port:
 
 ```java
-SocksServer server = new SocksServer(0);
-server.start();
-server.waitUntilStarted(1000);
+try (RunningSocksServer server = new SocksServer(0).startAndWait(1000)) {
+  int actualPort = server.getPort();
+  ...
+}
+```
 
-int actualPort = server.getListenPort();
+For synchronous startup in test code:
+
+```java
+SyncSocksServer socksServer = new SyncSocksServer();
+try (RunningSocksServer server = socksServer.startServer(0)) {
+  int actualPort = server.getPort();
+  ...
+}
 ```
 
 Or you can supply your own `ServerSocketFactory`:

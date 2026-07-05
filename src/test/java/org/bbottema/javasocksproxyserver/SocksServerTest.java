@@ -19,4 +19,15 @@ public class SocksServerTest {
 
         server.stop();
     }
+
+    @Test
+    public void startAndWait_on_dynamic_port_returns_running_server_handle() {
+        RunningSocksServer server = new SocksServer(0).startAndWait(1000);
+
+        int port = server.getPort();
+        assertTrue(port > 0);
+        assertTrue(Utils.isLocalPortAvailableToConnect(port));
+
+        server.stop();
+    }
 }

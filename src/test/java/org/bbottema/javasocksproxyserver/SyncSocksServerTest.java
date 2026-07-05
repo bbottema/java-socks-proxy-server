@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.Socket;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -64,5 +65,45 @@ public class SyncSocksServerTest {
 
         server.stop();
         socket.close();
+    }
+
+    @Test
+    public void startServer_on_dynamic_port_returns_running_server_handle() {
+        SyncSocksServer server = new SyncSocksServer();
+        RunningSocksServer runningServer = server.startServer(0);
+
+        int port = runningServer.getPort();
+        assertTrue(port > 0);
+        assertTrue(Utils.isLocalPortAvailableToConnect(port));
+
+        runningServer.stop();
+    }
+
+    @Test
+    public void startServer_can_start_multiple_dynamic_ports_on_same_instance() {
+        SyncSocksServer server = new SyncSocksServer();
+        RunningSocksServer firstServer = server.startServer(0);
+        RunningSocksServer secondServer = server.startServer(0);
+
+        assertTrue(firstServer.getPort() > 0);
+        assertTrue(secondServer.getPort() > 0);
+        assertNotEquals(firstServer.getPort(), secondServer.getPort());
+        assertTrue(Utils.isLocalPortAvailableToConnect(firstServer.getPort()));
+        assertTrue(Utils.isLocalPortAvailableToConnect(secondServer.getPort()));
+
+        server.stop();
+    }
+
+    @Test
+    public void stopping_one_running_server_keeps_other_server_available() {
+        SyncSocksServer server = new SyncSocksServer();
+        RunningSocksServer firstServer = server.startServer(0);
+        RunningSocksServer secondServer = server.startServer(0);
+
+        firstServer.stop();
+
+        assertTrue(Utils.isLocalPortAvailableToConnect(secondServer.getPort()));
+
+        secondServer.stop();
     }
 }

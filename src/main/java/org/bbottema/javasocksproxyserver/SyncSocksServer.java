@@ -38,7 +38,8 @@ public class SyncSocksServer {
 
     protected volatile boolean stopping = false;
 
-    protected final Map<Integer, Thread> servers = new HashMap<>(); // port -> thread map
+    protected final Map<Integer, Thread> servers = new HashMap<>(); // actual port -> thread map
+    private final Map<Integer, ServerProcess> serverProcesses = new HashMap<>();
 
     public SyncSocksServer() {
         this(DEFAULT_SERVER_SOCKET_OPEN_TIMEOUT_MILLIS, DEFAULT_SERVER_SOCKET_OPEN_RETRY_INTERVAL_MILLIS, DEFAULT_CLOSE_CONNECTION_TIMEOUT_MILLIS);
@@ -51,31 +52,69 @@ public class SyncSocksServer {
     }
 
     public synchronized void start(int listenPort) {
-        start(listenPort, ServerSocketFactory.getDefault());
+        startServer(listenPort);
     }
 
     public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory) {
-        start(listenPort, serverSocketFactory, new DefaultAuthenticator());
+        startServer(listenPort, serverSocketFactory);
     }
 
     public synchronized void start(int listenPort, ServerSocketFactory serverSocketFactory, Authenticator authenticator) {
+        startServer(listenPort, serverSocketFactory, authenticator);
+    }
+
+    public synchronized RunningSocksServer startServer(int listenPort) {
+        return startServer(listenPort, ServerSocketFactory.getDefault());
+    }
+
+    public synchronized RunningSocksServer startServer(int listenPort, ServerSocketFactory serverSocketFactory) {
+        return startServer(listenPort, serverSocketFactory, new DefaultAuthenticator());
+    }
+
+    public synchronized RunningSocksServer startServer(int listenPort, ServerSocketFactory serverSocketFactory, Authenticator authenticator) {
         stopping = false;
-        if (servers.containsKey(listenPort)) {
+        if (listenPort != 0 && servers.containsKey(listenPort)) {
             LOGGER.error("SOCKS server already started on port {}", listenPort);
-            return;
+            return createRunningServerHandle(listenPort);
         }
         ServerProcess serverProcess = new ServerProcess(listenPort, serverSocketFactory, authenticator);
         Thread thread = new Thread(serverProcess);
-        servers.put(listenPort, thread);
         thread.start();
         if (!serverProcess.waitServerSocketOpened(serverSocketOpenTimeoutMillis)) {
+            serverProcess.stop();
+            thread.interrupt();
+            waitServerToJoin(thread);
             throw new RuntimeException("Timeout waiting socket to be opened");
         }
+        int boundPort = serverProcess.getBoundPort();
+        servers.put(boundPort, thread);
+        serverProcesses.put(boundPort, serverProcess);
+        return createRunningServerHandle(boundPort);
     }
 
     public synchronized void stop() {
         stopping = true;
         waitAllServersToJoin();
+    }
+
+    public synchronized void stop(int port) {
+        ServerProcess serverProcess = serverProcesses.remove(port);
+        Thread thread = servers.remove(port);
+        if (serverProcess != null) {
+            serverProcess.stop();
+        }
+        if (thread != null) {
+            waitServerToJoin(thread);
+        }
+    }
+
+    private RunningSocksServer createRunningServerHandle(final int port) {
+        return new RunningSocksServerHandle(port, new Runnable() {
+            @Override
+            public void run() {
+                stop(port);
+            }
+        });
     }
 
     private class ServerProcess implements Runnable {
@@ -84,6 +123,8 @@ public class SyncSocksServer {
         private final ServerSocketFactory serverSocketFactory;
         private final List<ProxyClient> clients = new ArrayList<>();
         private final CountDownLatch serverSocketOpenLatch = new CountDownLatch(1);
+        private volatile boolean stopping = false;
+        private volatile int boundPort = -1;
 
         private final Authenticator authenticator;
 
@@ -108,24 +149,35 @@ public class SyncSocksServer {
         }
 
         protected void handleClients(int port) throws IOException, InterruptedException {
-            while (!stopping) {
-                try (ServerSocket listenSocket = serverSocketFactory.createServerSocket(port)) {
+            while (!shouldStop()) {
+                try (ServerSocket listenSocket = serverSocketFactory.createServerSocket(resolvePortToBind(port))) {
                     listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
+                    boundPort = listenSocket.getLocalPort();
 
-                    LOGGER.debug("SOCKS server listening at port: " + listenSocket.getLocalPort());
+                    LOGGER.debug("SOCKS server listening at port: " + boundPort);
                     serverSocketOpenLatch.countDown();
 
-                    while (!stopping) {
+                    while (!shouldStop()) {
                         handleNextClient(listenSocket);
                         removeDisconnectedClients();
                     }
                 } catch (Exception e) {
-                    LOGGER.debug("Can't handle clients on port {} ", port, e);
+                    if (!shouldStop()) {
+                        LOGGER.debug("Can't handle clients on port {} ", port, e);
+                    }
                 }
-                if (!stopping) {
+                if (!shouldStop()) {
                     Thread.sleep(serverSocketOpenRetryIntervalMillis);
                 }
             }
+        }
+
+        private int resolvePortToBind(int port) {
+            return boundPort > 0 ? boundPort : port;
+        }
+
+        private boolean shouldStop() {
+            return stopping || SyncSocksServer.this.stopping;
         }
 
         private boolean waitServerSocketOpened(long timeoutMillis) {
@@ -136,6 +188,14 @@ public class SyncSocksServer {
                 LOGGER.error("Timeout while waiting for server socket to opened {}", port);
                 throw new RuntimeException(e);
             }
+        }
+
+        private int getBoundPort() {
+            return boundPort;
+        }
+
+        private void stop() {
+            stopping = true;
         }
 
         private void handleNextClient(ServerSocket listenSocket) {
@@ -176,18 +236,27 @@ public class SyncSocksServer {
     }
 
     private void waitAllServersToJoin() {
-        servers.forEach((port, thread) -> {
-            LOGGER.debug("Waiting server on port {} to close", port);
-            try {
-                thread.join(closeConnectionTimeoutMillis);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        for (Map.Entry<Integer, ServerProcess> serverProcess : serverProcesses.entrySet()) {
+            serverProcess.getValue().stop();
+        }
+        for (Map.Entry<Integer, Thread> server : servers.entrySet()) {
+            LOGGER.debug("Waiting server on port {} to close", server.getKey());
+            waitServerToJoin(server.getValue());
+            if (server.getValue().isAlive()) {
+                LOGGER.error("Can't stop server on port {} to close", server.getKey());
             }
-            if (thread.isAlive()) {
-                LOGGER.error("Can't stop server on port {} to close", port);
-            }
-        });
+        }
+        serverProcesses.clear();
         servers.clear();
+    }
+
+    private void waitServerToJoin(Thread thread) {
+        try {
+            thread.join(closeConnectionTimeoutMillis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
 

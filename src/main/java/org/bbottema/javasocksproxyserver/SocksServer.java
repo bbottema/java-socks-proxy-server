@@ -70,6 +70,20 @@ public class SocksServer {
 			throw new RuntimeException("Interrupted while waiting for server socket to open", e);
 		}
 	}
+
+	public RunningSocksServer startAndWait(long timeoutMillis) {
+		start();
+		if (!waitUntilStarted(timeoutMillis)) {
+			stop();
+			throw new RuntimeException("Timeout waiting socket to be opened");
+		}
+		return new RunningSocksServerHandle(getListenPort(), new Runnable() {
+			@Override
+			public void run() {
+				stop();
+			}
+		});
+	}
 	
 	private class ServerProcess implements Runnable {
 		
